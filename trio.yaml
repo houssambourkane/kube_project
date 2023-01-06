@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: triolanguage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trio
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      name: triolanguage-unit
+      labels:
+        app: trio
+    spec:
+      imagePullSecrets:
+      - name: registry-cred
+      containers:
+      - name: triolanguage-unit-cont
+        image: triolanguage/webapp:1.0
+        ports:
+        - containerPort: 9000
+        volumeMounts:
+        - name: trio-storage
+          mountPath: /var/www/html/
+        command: ["/bin/sh","-c"]
+        args: ["cp -r /app/triolanguage/* /var/www/html/ ; /usr/local/sbin/php-fpm --nodaemonize"]
+      - name: nginx
+        image: my-nginx
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: trio-storage
+          mountPath: /var/www/html/
+      - name: mysql
+        image: my-mariadb
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3306
+        envFrom:
+        - configMapRef:
+            name: env-vars
+      volumes:
+      - name: trio-storage
+        persistentVolumeClaim:
+          claimName: trio-pvc
