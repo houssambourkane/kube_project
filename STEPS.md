@@ -1,30 +1,37 @@
 ## build triolanguage image
+```
 docker build -t triolanguage:1.0 .
-
+```
 ## login to dockerhub
+```
 cat ./registry_password.txt | docker login --username triolanguage --password-stdin
-
+```
 ## tag and push the image
+```
 docker tag triolanguage:1.0 triolanguage/webapp:1.0 
 docker push triolanguage/webapp:1.0
-
+```
 ## CHECK DIR EXIST
+```
 [ -d "/app/triolanguage" ] && git pull
- 
+ ```
 ## OR
+```
 [ ! -d "/app/triolanguage" ] && git clone https://github.com/houssambourkane/triolanguage.git /app/
-
+```
 ## Create our own nginx image and own mariadb image
+```
 docker build -t my-nginx ./nginx/
 docker build -t my-mariadb ./mariadb/
-
-
+```
 ## Create docker registry secret
+```
 kubectl create secret docker-registry registry-cred --docker-server=https://index.docker.io/v1/ --docker-username=triolanguage --docker-password=Triolanguage-123 --docker-email=triolanguage123@gmail.com
-
+```
 ## Create a configmap for environment variables
+```
 kubectl create configmap env-vars --from-env-file=.env
-
+```
 ## To run docker environment in minikube's, we run
 ```
 eval $(minikube -p minikube docker-env)
