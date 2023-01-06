@@ -25,6 +25,7 @@ this command will build all the images needed, and apply some YAML files that wi
 ```
 make getURL
 ```
+*Navigate through or curl the second URL to get the website home page*
 ### 5 - To down the cluster use the command
 ```
 make clusterDOWN
